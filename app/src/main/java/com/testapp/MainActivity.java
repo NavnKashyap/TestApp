@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
@@ -45,8 +46,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-        DownloadFileAsync download = new DownloadFileAsync(mediaStorageDir.getPath() + File.separator +
-                Consts.APP_NAME + timeStamp + "zip", this, new DownloadFileAsync.PostDownload(){
+        path=mediaStorageDir.getPath() + File.separator +
+                Consts.APP_NAME + timeStamp;
+
+        DownloadFileAsync download = new DownloadFileAsync(path+ ".zip", this, new DownloadFileAsync.PostDownload(){
             @Override
             public void downloadDone(File file) {
                 Log.e(TAG, "file download completed");
@@ -57,11 +60,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 ZipArchive zipArchive = new ZipArchive();
-                zipArchive.unzip(mediaStorageDir.getPath() + File.separator +
-                        Consts.APP_NAME + timeStamp + "zip",mediaStorageDir.getPath() + File.separator +
-                        Consts.APP_NAME + timeStamp,"");
-                path=mediaStorageDir.getPath() + File.separator +
-                        Consts.APP_NAME + timeStamp;
+                zipArchive.unzip(path + ".zip",path,"");
+
 
                         binding.tvShowweb.setVisibility(View.VISIBLE);
                 Log.e(TAG, "file unzip completed");
@@ -77,7 +77,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         WebSettings ws = binding.webview.getSettings();
         ws.setAllowFileAccess(true);
         String dir = getFilesDir().getAbsolutePath();
-        binding.webview.loadUrl("file://"+path+".html");
+//        binding.webview.loadUrl("file://"+path+"/examples"+"/user.html");
+
+
+        File file = new File(path+"/examples"+"/user.html");
+
+//        binding.webview = (WebView) findViewById(R.id.webview);
+        WebSettings settings = binding.webview.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
+        settings.setBuiltInZoomControls(true);
+        binding.webview.setWebChromeClient(new WebChromeClient());
+        binding.webview.loadUrl( file.getAbsolutePath() );
+
 
     }
 
@@ -90,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.tvShowweb:
                 binding.llBTN.setVisibility(View.GONE);
-                binding.llWebview.setVisibility(View.GONE);
+                binding.llWebview.setVisibility(View.VISIBLE);
                 showWebview(path);
                 break;
         }
