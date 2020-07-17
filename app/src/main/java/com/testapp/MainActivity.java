@@ -3,6 +3,7 @@ package com.testapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.testapp.databinding.ActivityMainBinding;
 import com.testapp.util.DownloadFileAsync;
@@ -26,9 +28,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static String TAG = MainActivity.class.getSimpleName();
     String path="";
     ActivityMainBinding binding;
+    Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context=MainActivity.this;
       binding= DataBindingUtil .setContentView(this,R.layout.activity_main);
 
       binding.tvDownload.setOnClickListener(this);
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String root = Environment.getExternalStorageDirectory().toString();
 
-        final File mediaStorageDir = new File(root, Consts.APP_NAME);
+        final File mediaStorageDir = new File(root, Consts.APP_PATH);
 
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void downloadDone(File file) {
                 Log.e(TAG, "file download completed");
+                Toast.makeText(context, "file download completed", Toast.LENGTH_SHORT).show();
 
                 // check unzip file now
 //                Decompress unzip = new Decompress(Home.this, file);
@@ -73,24 +78,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showWebview(String path) {
 
 
-
         WebSettings ws = binding.webview.getSettings();
         ws.setAllowFileAccess(true);
+
+        ws.setJavaScriptEnabled(true);
+        ws.setAllowFileAccessFromFileURLs(true);
+        ws.setAllowUniversalAccessFromFileURLs(true);
+        ws.setBuiltInZoomControls(true);
         String dir = getFilesDir().getAbsolutePath();
-//        binding.webview.loadUrl("file://"+path+"/examples"+"/user.html");
+        binding.webview.getSettings().setJavaScriptEnabled(true);
+        binding.webview.getSettings().setDomStorageEnabled(true);
+        binding.webview.loadUrl("file:/"+path/*+"/examples"+"/user.html"*/);
 
+/*
+        File file = new File("file://"+path+"/examples"+"/user.html");
 
-        File file = new File(path+"/examples"+"/user.html");
-
-//        binding.webview = (WebView) findViewById(R.id.webview);
         WebSettings settings = binding.webview.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setBuiltInZoomControls(true);
         binding.webview.setWebChromeClient(new WebChromeClient());
-        binding.webview.loadUrl( file.getAbsolutePath() );
-
+        binding.webview.loadUrl( file.getAbsolutePath() );*/
 
     }
 

@@ -3,6 +3,7 @@ package com.testapp.util;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -43,13 +44,16 @@ public class DownloadFileAsync extends AsyncTask<String, String, String> {
             connection.connect();
 
             int lenghtOfFile = connection.getContentLength();
-            Log.d(TAG, "Length of the file: " + lenghtOfFile);
+            Log.e(TAG, "Length of the file: " + lenghtOfFile);
 
             InputStream input = new BufferedInputStream(url.openStream());
             file = new File(downloadLocation);
             FileOutputStream output = new FileOutputStream(file); //context.openFileOutput("content.zip", Context.MODE_PRIVATE);
-            Log.d(TAG, "file saved at " + file.getAbsolutePath());
+            Log.e(TAG, "file saved at " + file.getAbsolutePath());
             fd = output.getFD();
+
+            Toast.makeText(context, "Download Done", Toast.LENGTH_SHORT).show();
+
 
             byte data[] = new byte[1024];
             long total = 0;
